@@ -5,120 +5,102 @@
  * The rooms can be reserved by customers according to the criteria of the hotel."
  */
 
+#include <netdb.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include "includes/sockets.h"
+
+// function executed by a thread (un thread est un fil d'exécution dans un processus)
+// send a msg for the connected user to the socket
+
+void *function(void *arg){
+    
+    //convert the received argument to an integer
+    int socket = *(int *)arg;
+
+    char msg[] = "quel est votre login et mot de passe ?";
+    User user;
+
+    //send the message to the socket
+    send(socket, msg, strlen(msg) + 1, 0);
+    //receive data from the socket
+    recv(socket, &user, sizeof(user), 0);
+    
+    printf("%s bienvenue au programme\n", user.nom);
+    
+    //close the socket
+    close(socket);
+    //free the allocated memory
+    free(arg);
+    //finish the thread
+    pthread_exit(NULL);
+
+}
 
 int main(){
 
-    char ip[16];
-    int port;
-
-    // opening the conf file to get the ip address of the server and the port number
-    FILE *config_file = fopen("server.conf", "r");
-    
-    if (config_file == NULL) {
-        printf("Error opening config file\n");
-        return 1;
-    }
-
-    fscanf(config_file, "%s %d", ip, &port);
-
-
-    int server_sock, client_sock, logfile_sock;
-
-    struct sockaddr_in server_addr, client_addr, logfile_addr;
-    
-    socklen_t addr_size;
-
-    char buffer[1024];
-    int n;
-
     //create the TCP server socket
-    server_sock = socket(AF_INET, SOCK_STREAM, 0);
-    
-    if(server_sock < 0){
-        perror("[-]Socket error");
-        exit(1);
-    }
-
-    printf("[+]TCP server socket created. \n");
+    int sockServer = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in addrServer;
 
     /*
-    set up the socket address structure for connecting to a server.
+    1-sets the address family to be used as the Internet Protocol v4.
 
-    1-initialize the memory for the address structure to all zeroes.
+    2-set the port number to be used for the connection.
 
-    2-sets the address family to be used as the Internet Protocol v4.
-
-    3-set the port number to be used for the connection.
-
-    4-set the IP address to be used for the connection using the inet_addr function which converts the passed IP address string to an 32-bit integer.
+    3-set the IP address to be used for the connection using the inet_addr function which converts the passed IP address string to an 32-bit integer.
     */
-
-    memset(&server_addr, '\0', sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = port;
-    server_addr.sin_addr.s_addr = inet_addr(ip);
+    addrServer.sin_addr.s_addr = inet_addr("141.94.70.142");
+    addrServer.sin_family = AF_INET;
+    addrServer.sin_port = htons(10000);
 
     //assign or bind a local address and port to a socket
-    n = bind(server_sock, (struct sockaddr*)&server_addr, sizeof(server_addr));
+    bind(sockServer, (const struct sockaddr *)&addrServer, sizeof(addrServer));
 
-    if(n < 0){
-        perror("[-]Bind error");
-        exit(1);
-    }
-
-    printf("[+]Bind to the port number : %d\n", port);
 
     //a socket that will be used to accept incoming connections
     // 5 -> the maximum number of connections that can be queued for the socket
-    listen(server_sock, 5);
-    printf("Listening ...\n");
+    listen(sockServer, 5);
 
-    while(1){
+    pthread_t threads[5];
 
+    for(int i = 0; i < 5; i++){
+        
         //accept, receive and send data over a socket connection
+        struct sockaddr_in addrClient;
+        socklen_t csize = sizeof(addrClient);
+        int socketClient = accept(sockServer, (struct sockaddr *)&addrClient, &csize);
 
-        addr_size = sizeof(client_addr);
-        client_sock = accept(server_sock, (struct sockaddr*)&client_addr, &addr_size);
-        printf("[+]Client connected.\n");
+        //allocates a memory area to store an integer
+        int *arg = malloc(sizeof(int));
+        //stores the value of socketClient in the allocated memory area
+        *arg = socketClient;
 
-        bzero(buffer, 1024);
-        recv(client_sock, buffer, sizeof(buffer), 0);
-        printf("Client: %s\n", buffer);
-
-        bzero(buffer, 1024);
-        strcpy(buffer, "HI THIS IS SERVER. HAVE A NICE DAY!");
-        printf("Server : %s\n", buffer);
-        send(client_sock, buffer, strlen(buffer), 0);
-
-        close(client_sock);
-        printf("[+]Client disconnected.\n\n");
-
-        addr_size = sizeof(logfile_addr);
-        logfile_sock = accept(server_sock, (struct sockaddr*)&logfile_addr, &addr_size);
-        printf("[+]Logfile connected.\n");
-
-        bzero(buffer, 1024);
-        recv(logfile_sock, buffer, sizeof(buffer), 0);
-        printf("Logfile: %s\n", buffer);
-
-        bzero(buffer, 1024);
-        strcpy(buffer, "HI THIS IS SERVER. HAVE A NICE DAY LOGFILE!");
-        printf("Server : %s\n", buffer);
-        send(logfile_sock, buffer, strlen(buffer), 0);
-
-        close(logfile_sock);
-        printf("[+]logfile disconnected.\n\n");
-
+        //create a new thread and start the execution of the function function
+        pthread_create(&threads[i],NULL, function, arg);
 
     }
 
-    //closing the conf file
-    fclose(config_file);
+    for(int i = 0; i < 5; i ++){
+        
+        /*
+            pthread_join blocks execution of the calling thread until the specified thread has terminated.
+            this ensures that the calling thread can access resources shared by the terminated thread without risk of data corruption.
+        */
+       
+        pthread_join(threads[i], NULL);
+
+    }
+
+    //close the server socket
+    close(sockServer);
 
     return 0;
 }
