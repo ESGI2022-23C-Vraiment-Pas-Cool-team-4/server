@@ -15,7 +15,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/types.h>
-#include "includes/sockets.h"
+#include "../sockets.h"
 
 // function executed by a thread (un thread est un fil d'exécution dans un processus)
 // send a msg for the connected user to the socket
