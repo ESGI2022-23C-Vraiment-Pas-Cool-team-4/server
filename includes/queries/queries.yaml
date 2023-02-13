@@ -1,0 +1,197 @@
+requests: 
+  - query: GetHotel
+    params: 
+      Id: Int
+    fields:
+      Id: Int
+      Nom: String
+      Adresse: String
+      nombre_de_chambres: Int
+      nombre_d_etoile: Int
+  - query: CreateHotel
+    params: 
+      Id : Int
+      Nom : String
+      Adresse : String
+      nombre_de_chambres : Int
+      nombre_d_etoile : Int
+    fields:
+      Id : Int
+      Nom : String
+      Adresse : String
+      nombre_de_chambres : Int
+      nombre_d_etoile : Int
+  - query: UpdateHotel
+    params: 
+      Id : Int
+      Nom : String
+      Adresse : String
+      nombre_de_chambres : Int
+      nombre_d_etoile : Int
+    fields:
+      Id : Int
+      Nom : String
+      Adresse : String
+      nombre_de_chambres : Int
+      nombre_d_etoile : Int 
+  - query: DeleteHotel
+    params: 
+      Id: Int
+    fields:
+      Id: Int
+      Nom: String
+      Adresse: String
+      nombre_de_chambres: Int
+      nombre_d_etoile: Int
+  - query: GetRoom
+    params:
+      numero_chambre : Int
+    fields:  
+      numero_chambre : Int
+      type_chambre : String
+      capacite : Int
+      Prix : Decimal
+  - query: CreateRoom
+    params:
+      numero_chambre : Int
+      type_chambre : String
+      capacite : Int
+      Prix : Decimal      
+    fields:  
+    numero_chambre : Int
+    type_chambre : String
+    capacite : Int
+    Prix : Decimal
+  - query: UpdateRoom
+    params:
+      numero_chambre : Int
+      type_chambre : String
+      capacite : Int
+      Prix : Decimal      
+    fields:  
+      numero_chambre : Int
+      type_chambre : String
+      capacite : Int
+      Prix : Decimal
+  - query: DeleteRoom
+    params:
+      numero_chambre : Int
+    fields:  
+      numero_chambre : Int
+      type_chambre : String
+      capacite : Int
+      Prix : Decimal
+  - query: GetReservation
+    params:
+      numero_reservation : Int
+    fields:  
+      numero_reservation : Int
+      date_debut : Date
+      date_fin : Date
+  - query: CreateReservation
+    params:
+      numero_reservation : Int
+      date_debut : Date
+      date_fin : Date    
+    fields:  
+      numero_reservation : Int
+      date_debut : Date
+      date_fin : Date
+  - query: UpdateReservation
+    params:
+      numero_reservation : Int
+      date_debut : Date
+      date_fin : Date     
+    fields:  
+      numero_reservation : Int
+      date_debut : Date
+      date_fin : Date
+  - query: DeleteReservation
+    params:
+      numero_reservation : Int
+    fields:  
+      numero_reservation : Int
+      date_debut : Date
+      date_fin : Date
+  - query: GetClient
+    params:
+      Id : Int
+    fields:  
+      Id : Int
+      nom : String
+      adresse : String
+      phone : String
+      date_de_reservation : Date
+  - query: CreateClient
+    params:
+      Id : Int
+      nom : String
+      adresse : String
+      phone : String
+      date_de_reservation : Date   
+    fields:  
+      Id : Int
+      nom : String
+      adresse : String
+      phone : String
+      date_de_reservation : Date
+  - query: UpdateClient
+    params:
+      Id : Int
+      nom : String
+      adresse : String
+      phone : String
+      date_de_reservation : Date    
+    fields:  
+        Id : Int
+        nom : String
+        adresse : String
+        phone : String
+        date_de_reservation : Date
+  - query: DeleteClient
+    params:
+        Id : Int
+    fields:  
+        Id : Int
+        nom : String
+        adresse : String
+        phone : String
+        date_de_reservation : Date
+  - query: GetEmployee
+    params:
+        Id : Int
+    fields:  
+        Id : Int
+        nom : String
+        mot_de_passe : String
+        adresse_mail : String
+  - query: CreateEmployee
+    params:
+        Id : Int
+        nom : String
+        mot_de_passe : String
+        adresse_mail : String 
+    fields:  
+        Id : Int
+        nom : String
+        mot_de_passe : String
+        adresse_mail : String
+  - query: UpdateEmployee
+    params:
+        Id : Int
+        nom : String
+        mot_de_passe : String
+        adresse_mail : String   
+    fields:  
+        Id : Int
+        nom : String
+        mot_de_passe : String
+        adresse_mail : String
+  - query: DeleteEmployee
+    params:
+        Id : Int
+    fields:  
+        Id : Int
+        nom : String
+        mot_de_passe : String
+        adresse_mail : String 
