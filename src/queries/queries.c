@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <yaml.h>
 #include <string.h>
-#include "../queries.h"
+#include "../../includes/queries.h"
 
 /*
  * set of functions that correspond to each of the yaml commands/queries in the input file "queries.yaml".
