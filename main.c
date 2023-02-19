@@ -8,8 +8,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/types.h>
+#include "includes/header.h"
+#include "includes/requetes.h"
+#include <mysql/mysql.h>
+#include <unistd.h>
 
-int charToInt(char* str) {
+int charToInt2(char* str) {
     int result = 0;
     char currentChar;
 
@@ -27,7 +31,18 @@ int charToInt(char* str) {
     return result;
 }
 
-int main(){
+int main(int argc, char **argv) {
+    if(detectSetup(argc, argv)){
+    if(!findParameters()){
+    createDataBase();
+    buildDataBase();
+    createConfigFile();
+    }
+    }
+  
+
+  
+    return 1; 
 
     char ip[16];
     char port[6];
@@ -72,7 +87,7 @@ int main(){
     4-set the IP address to be used for the connection using the inet_addr function which converts the passed IP address string to an 32-bit integer.
     */
 
-    int p = charToInt(port);
+    int p = charToInt2(port);
 
     memset(&server_addr, '\0', sizeof(server_addr));
     server_addr.sin_family = AF_INET;
@@ -108,7 +123,7 @@ int main(){
         // bzero(password_buffer, sizeof(password_buffer));
 
         recv(client_sock, name_buffer, sizeof(name_buffer), 0);
-        printf("Client name: %s\n", name_buffer);
+         createSQLquery(deconcatene(name_buffer)); 
 
         // recv(client_sock, password_buffer, sizeof(password_buffer), 0);
         // printf("Client password: %s\n\n", password_buffer);
