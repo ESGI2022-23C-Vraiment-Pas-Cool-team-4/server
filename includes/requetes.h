@@ -9,7 +9,7 @@ typedef struct{
 
 #ifndef UNTITLED4_HEADER_H
 #define UNTITLED4_HEADER_H
-
+query* deconcatene(char* s);
 char* concatene(query *q);
 char* createSQLquery(query queries);
 int determineQuery(char* type);

@@ -395,4 +395,124 @@ char* concatene(query *q)
         res=strcat(res,q->paramsValue[i]);
     }
     return res;
-}    
+}
+query* deconcatene(char* s)
+{
+    const int start=9;
+    query *res=malloc(sizeof(*res));
+    int i=9,para=-1,cptS=0,stock=0,initName=0,initValue=0;
+    char* serie=(char*)malloc(sizeof(char)*100);
+    while(s[i]!='\0')
+    {
+        if(s[i]=='\n')
+        {
+            para++;
+        }
+        i++;
+    }
+    res->nbParams=para;
+    res->paramsName=(char**)malloc(sizeof(char*)*para);
+    res->paramsValue=(char**)malloc(sizeof(char*)*para);
+    i=start;
+
+    while(s[i]!='\n')
+    {
+        i++;
+    }
+    i-=start;
+
+    para=0;
+    res->type=(char*)malloc(sizeof(char)*(i+1));
+    i=start;
+
+    while(s[i]!='\n')
+    {
+        serie[para]=s[i];
+        para++;
+        i++;
+    }
+    serie[para]='\0';
+    strcpy(res->type,serie);
+    free(serie);
+    serie=(char*)malloc(sizeof(char)*100);
+
+
+    i=start;
+    while(cptS!=2)
+    {
+        if(s[i]=='\n')
+        {
+            cptS++;
+        }
+        i++;
+    }
+    i+=2;
+    stock=i;
+    para=0;
+    while(1)
+    {
+        if(s[i]=='\n' || s[i]=='\0')
+        {
+            if(s[i]=='\0')
+            {
+                res->paramsValue[initValue]=(char*)malloc(sizeof(char)*(para+1));
+                break;
+            }
+            res->paramsValue[initValue]=(char*)malloc(sizeof(char)*(para+1));
+            para=-1;
+            i+=2;
+            initValue++;
+        }
+        if(s[i]==':')
+        {
+            res->paramsName[initName]=(char*)malloc(sizeof(char)*(para+1));
+            para=-1;
+            i++;
+            initName++;
+        }
+        para++;
+        i++;
+    }
+
+    i=stock;
+    para=0;
+    initName=0;
+    initValue=0;
+
+    while(1)
+    {
+        if(s[i]!=':' && s[i]!='\n' && s[i]!='\0')
+        {
+            serie[para]=s[i];
+        }
+        if(s[i]==':')
+        {
+            serie[para]='\0';
+            strcpy(res->paramsName[initName],serie);
+            initName++;
+            para=-1;
+            i++;
+            free(serie);
+            serie=(char*)malloc(sizeof(char)*100);
+        }
+        if(s[i]=='\n' || s[i]=='\0')
+        {
+            serie[para]='\0';
+            if(s[i]=='\0')
+            {
+                strcpy(res->paramsValue[initValue],serie);
+                break;
+            }
+            strcpy(res->paramsValue[initValue],serie);
+            initValue++;
+            para=-1;
+            i+=2;
+            free(serie);
+            serie=(char*)malloc(sizeof(char)*100);
+        }
+        para++;
+        i++;
+    }
+    free(serie);
+    return res;
+}

@@ -41,7 +41,6 @@ int main(int argc, char **argv) {
     }
   
 
-  //createSQLquery(test);
   
     return 1; 
 
@@ -124,7 +123,7 @@ int main(int argc, char **argv) {
         // bzero(password_buffer, sizeof(password_buffer));
 
         recv(client_sock, name_buffer, sizeof(name_buffer), 0);
-        printf("Client name: %s\n", name_buffer);
+         createSQLquery(deconcatene(name_buffer)); 
 
         // recv(client_sock, password_buffer, sizeof(password_buffer), 0);
         // printf("Client password: %s\n\n", password_buffer);
