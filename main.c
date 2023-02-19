@@ -113,8 +113,8 @@ int main(){
         // recv(client_sock, password_buffer, sizeof(password_buffer), 0);
         // printf("Client password: %s\n\n", password_buffer);
 
-        char* client_name = name_buffer;
-        char* client_ipp = client_ip;
+        //char* client_name = name_buffer;
+        //char* client_ipp = client_ip;
         //add_user(&client_list, client_name, client_ipp);
 
         bzero(buffer, 1024);
