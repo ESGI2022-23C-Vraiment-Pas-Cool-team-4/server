@@ -82,6 +82,9 @@ int main(){
     int sockServer = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in addrServer;
 
+    int new_socket, valread;
+    int addrlen = sizeof(addrServer);
+
     /*
     1-sets the address family to be used as the Internet Protocol v4.
 
@@ -101,9 +104,9 @@ int main(){
     // 5 -> the maximum number of connections that can be queued for the socket
     listen(sockServer, 5);
 
-    pthread_t threads[5];
+    pthread_t threads[20];
 
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < 20; i++){
         
         //accept, receive and send data over a socket connection
         struct sockaddr_in addrClient;
@@ -120,7 +123,7 @@ int main(){
 
     }
 
-    for(int i = 0; i < 5; i ++){
+    for(int i = 0; i < 20; i ++){
         
         /*
             pthread_join blocks execution of the calling thread until the specified thread has terminated.
@@ -130,7 +133,7 @@ int main(){
         pthread_join(threads[i], NULL);
 
     }
-
+    
     //close the server socket
     close(sockServer);
     //closing the conf file
