@@ -12,3 +12,6 @@ typedef struct User {
     char mdp[30];
 
 }User;
+
+int charToInt(char* str);
+void *function(void *arg);
