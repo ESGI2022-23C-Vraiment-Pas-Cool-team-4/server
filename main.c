@@ -13,7 +13,7 @@
 #include <mysql/mysql.h>
 #include <unistd.h>
 
-int charToInt(char* str) {
+int charToInt2(char* str) {
     int result = 0;
     char currentChar;
 
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
     4-set the IP address to be used for the connection using the inet_addr function which converts the passed IP address string to an 32-bit integer.
     */
 
-    int p = charToInt(port);
+    int p = charToInt2(port);
 
     memset(&server_addr, '\0', sizeof(server_addr));
     server_addr.sin_family = AF_INET;
