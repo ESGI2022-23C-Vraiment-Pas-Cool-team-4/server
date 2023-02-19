@@ -68,7 +68,7 @@ void print_user_list(struct user_node* user_list) {
     }
 }
 
-int server(char *query){
+int server(){
 
     struct user_node* client_list = NULL;
 
