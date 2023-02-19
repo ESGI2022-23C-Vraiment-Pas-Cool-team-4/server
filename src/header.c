@@ -1,4 +1,5 @@
 #include "../includes/header.h"
+#include <stdio.h>
 
 int charToInt(char* str) {
     int result = 0;
