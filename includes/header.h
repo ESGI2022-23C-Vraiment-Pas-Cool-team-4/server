@@ -25,3 +25,5 @@ struct user_node {
     char ip_address[256];
     struct user_node* next;
 };
+
+int server();
