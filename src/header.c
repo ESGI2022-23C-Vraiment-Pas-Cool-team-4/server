@@ -129,7 +129,44 @@ int buildDataBase(){
 
     return 0;
     }
-       
+int createFirstAdmin(){
+
+    char nom[30];
+    char password[100];
+    char email[100];
+    char* query = malloc(250*(sizeof(char*)));
+    printf("parametrage du compte admin (Obligatoire) : ");
+
+    printf("Entrez votre nom : ");
+    scanf("%s", nom);
+
+    printf("Entrez votre mot de passe : ");
+    // utilise la fonction getpass pour masquer le mot de passe
+    char* password_tmp = getpass("");
+    strncpy(password, password_tmp, sizeof(password));
+
+    printf("Entrez votre adresse e-mail : ");
+    scanf("%s", email);
+
+    sprintf(query, "INSERT INTO Employes (nom, password, email, role) VALUES ('%s','%s','%s','0');", nom, password, email);
+
+    MYSQL *conn;
+
+
+    conn = mysql_init(NULL);
+
+    if (!mysql_real_connect(conn, "localhost", "root", "root", "hotel", 0, NULL, 0)) {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+    }
+
+    if (mysql_query(conn, query)) {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+
+    }
+    mysql_close(conn);
+
+    return 1;
+}
 
 
 int createConfigFile(){
@@ -198,41 +235,4 @@ int findParameters() {
 
 }
 
-int createFirstAdmin(){
 
-    char nom[30];
-    char password[100];
-    char email[100];
-    char* query = malloc(250*(sizeof(char*)));
-    printf("parametrage du compte admin (Obligatoire) : ");
-    
-    printf("Entrez votre nom : ");
-    scanf("%s", nom);
-    
-    printf("Entrez votre mot de passe : ");
-    // utilise la fonction getpass pour masquer le mot de passe
-    char* password_tmp = getpass("");
-    strncpy(password, password_tmp, sizeof(password));
-    
-    printf("Entrez votre adresse e-mail : ");
-    scanf("%s", email);
-    
-    sprintf(query, "INSERT INTO Employes (nom, password, email, role) VALUES ('%s','%s','%s','0');", nom, password, email);
-    
-    MYSQL *conn;
-
-
-    conn = mysql_init(NULL);
-
-    if (!mysql_real_connect(conn, "localhost", "root", "root", "hotel", 0, NULL, 0)) {
-        fprintf(stderr, "%s\n", mysql_error(conn));
-    }
-    
-     if (mysql_query(conn, query)) {
-        fprintf(stderr, "%s\n", mysql_error(conn));
-
-    }
-    mysql_close(conn);
-    
-    return 1;
-}
