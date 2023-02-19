@@ -15,6 +15,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/types.h>
+#include "../../includes/header.h"
 
 int charToInt(char* str) {
     int result = 0;
