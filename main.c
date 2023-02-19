@@ -15,7 +15,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/types.h>
-#include "includes/header.c"
+#include "src/header.c"
 #include "src/server/server.c"
 
 int main(){
