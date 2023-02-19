@@ -23,10 +23,7 @@ char* query2 = malloc(lenght*(sizeof(char*)));
 char* queryForCreate= malloc(lenght*(sizeof(char*)));
 char* queryForUpdate= malloc(lenght*(sizeof(char*)));
 char* colonne = malloc(lenght*(sizeof(char*)));
-char* typeChambres = malloc(30*(sizeof(char*)));
-int nbEtoile = -1;
-char* dateDebut = malloc(30*(sizeof(char*)));
-char* dateFin = malloc(30*(sizeof(char*)));
+char* queryForsearch = malloc(lenght*(sizeof(char*)));
 int id = -1;
 int idIndex= -1;
 
@@ -85,25 +82,17 @@ for(int i=0;i<queries.nbParams;i++){
 }
 }
 
-if(typeOfQuery == UPDATE){
-for(int i=0; i<queries.nbParams;i++) {
-if(strcmp("type_chambre",queries.paramsName[i])==0){
- typeChambres= queries.paramsValue[i];
- }
-  if(strcmp("nb_etoile",queries.paramsName[i])==0){
- nbEtoile= charToInt(queries.paramsValue[i]);
- }
-  if(strcmp("date_debut",queries.paramsName[i])==0){
- dateDebut= queries.paramsValue[i];
- }
-  if(strcmp("date_fin",queries.paramsName[i])==0){
- dateFin= queries.paramsValue[i] ;
- }
- 
 
-sprintf(query2, "SELECT c.*, r.numero_reservation FROM Chambres c INNER JOIN Hotel h ON c.id = h.id LEFT JOIN est_reserve r ON c.numero_chambre = r.numero_chambre LEFT JOIN Reservations res ON r.numero_reservation = res.numero_reservation WHERE h.nb_etoile = %d AND c.type_chambre = '%s' AND ((res.date_debut <= '%s' AND res.date_fin >= '%s')OR r.numero_reservation IS NULL);",nbEtoile, typeChambres, dateDebut, dateFin);
+if(typeOfQuery == SEARCH){
+for(int i=0; i<queries.nbParams;i++) {
+if(i==0){
+sprintf(queryForsearch, "%s='%s'",queries.paramsName[i], queries.paramsValue[i]);
+}else{
+sprintf(queryForsearch, "%s OR ¨%s='%s'", queryForsearch, queries.paramsName[i], queries.paramsValue[i]);
 }
 }
+}
+
 
 
 switch (typeOfQuery) {
@@ -119,6 +108,10 @@ switch (typeOfQuery) {
         case DELETE:
             sprintf(query2, "DELETE FROM %s WHERE id = %d;", table, id);
             break;
+        case SEARCH:
+        	sprintf(query2, "SELECT * FROM %s WHERE %s ;",table, queryForsearch);
+        
+            break; 
     }
     
     printf("%s",query2);
@@ -395,124 +388,4 @@ char* concatene(query *q)
         res=strcat(res,q->paramsValue[i]);
     }
     return res;
-}
-query* deconcatene(char* s)
-{
-    const int start=9;
-    query *res=malloc(sizeof(*res));
-    int i=9,para=-1,cptS=0,stock=0,initName=0,initValue=0;
-    char* serie=(char*)malloc(sizeof(char)*100);
-    while(s[i]!='\0')
-    {
-        if(s[i]=='\n')
-        {
-            para++;
-        }
-        i++;
-    }
-    res->nbParams=para;
-    res->paramsName=(char**)malloc(sizeof(char*)*para);
-    res->paramsValue=(char**)malloc(sizeof(char*)*para);
-    i=start;
-
-    while(s[i]!='\n')
-    {
-        i++;
-    }
-    i-=start;
-
-    para=0;
-    res->type=(char*)malloc(sizeof(char)*(i+1));
-    i=start;
-
-    while(s[i]!='\n')
-    {
-        serie[para]=s[i];
-        para++;
-        i++;
-    }
-    serie[para]='\0';
-    strcpy(res->type,serie);
-    free(serie);
-    serie=(char*)malloc(sizeof(char)*100);
-
-
-    i=start;
-    while(cptS!=2)
-    {
-        if(s[i]=='\n')
-        {
-            cptS++;
-        }
-        i++;
-    }
-    i+=2;
-    stock=i;
-    para=0;
-    while(1)
-    {
-        if(s[i]=='\n' || s[i]=='\0')
-        {
-            if(s[i]=='\0')
-            {
-                res->paramsValue[initValue]=(char*)malloc(sizeof(char)*(para+1));
-                break;
-            }
-            res->paramsValue[initValue]=(char*)malloc(sizeof(char)*(para+1));
-            para=-1;
-            i+=2;
-            initValue++;
-        }
-        if(s[i]==':')
-        {
-            res->paramsName[initName]=(char*)malloc(sizeof(char)*(para+1));
-            para=-1;
-            i++;
-            initName++;
-        }
-        para++;
-        i++;
-    }
-
-    i=stock;
-    para=0;
-    initName=0;
-    initValue=0;
-
-    while(1)
-    {
-        if(s[i]!=':' && s[i]!='\n' && s[i]!='\0')
-        {
-            serie[para]=s[i];
-        }
-        if(s[i]==':')
-        {
-            serie[para]='\0';
-            strcpy(res->paramsName[initName],serie);
-            initName++;
-            para=-1;
-            i++;
-            free(serie);
-            serie=(char*)malloc(sizeof(char)*100);
-        }
-        if(s[i]=='\n' || s[i]=='\0')
-        {
-            serie[para]='\0';
-            if(s[i]=='\0')
-            {
-                strcpy(res->paramsValue[initValue],serie);
-                break;
-            }
-            strcpy(res->paramsValue[initValue],serie);
-            initValue++;
-            para=-1;
-            i+=2;
-            free(serie);
-            serie=(char*)malloc(sizeof(char)*100);
-        }
-        para++;
-        i++;
-    }
-    free(serie);
-    return res;
-}
+}    
