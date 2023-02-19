@@ -1,7 +1,7 @@
 name: On Code Change
 
 on:
-  pull_request:
+  pull_request: 
     type: [opened, reopened, synchronize]
 
 jobs:
