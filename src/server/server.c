@@ -64,7 +64,7 @@ int charToInt(char* str){
 int main(){
 
     char ip[16];
-    char *port;
+    char *port = NULL;
 
     // opening the conf file to get the ip address of the server and the port number
     FILE *config_file = fopen("server.conf", "r");
@@ -81,9 +81,6 @@ int main(){
     //create the TCP server socket
     int sockServer = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in addrServer;
-
-    int new_socket, valread;
-    int addrlen = sizeof(addrServer);
 
     /*
     1-sets the address family to be used as the Internet Protocol v4.
