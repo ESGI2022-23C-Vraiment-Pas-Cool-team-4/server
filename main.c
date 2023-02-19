@@ -15,11 +15,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/types.h>
-#include "src/header.c"
-#include "src/server/server.c"
+#include "src/header.h"
 
 int main(){
-
     server();
     return 0;
 }
