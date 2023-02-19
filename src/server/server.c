@@ -15,7 +15,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/types.h>
-#include "includes/header.c"
+#include "../../includes/header.c"
 
 int server(char *query){
 
