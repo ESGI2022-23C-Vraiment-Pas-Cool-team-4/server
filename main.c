@@ -1,37 +1,17 @@
-#include <netdb.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sys/types.h>
 #include "includes/header.h"
 #include "includes/requetes.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <mysql/mysql.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
-int charToInt2(char* str) {
-    int result = 0;
-    char currentChar;
-
-    for (int i = 0; i < strlen(str); i++) {
-        currentChar = str[i];
-        if (currentChar < 48 || currentChar > 57) {
-            result = -1;
-            break;
-        } else {
-            result *= 10;
-            result += currentChar - 48;
-        }
-    }
-
-    return result;
-}
+#define PORT 10000
 
 int main(int argc, char **argv) {
+
     if(detectSetup(argc, argv)){
     if(!findParameters()){
     createDataBase();
@@ -40,112 +20,87 @@ int main(int argc, char **argv) {
     }
     }
   
-
+//  query test;
+//   test.type="DeleteEmployes";
+//   test.paramsName = malloc(100*(sizeof(char*)));
+//   test.paramsValue = malloc(100*(sizeof(char*)));
   
-    return 1; 
-
-    char ip[16];
-    char port[6];
-
-    // opening the conf file to get the ip address of the server and the port number
-    FILE *config_file = fopen("conf/server.conf", "r");
+//   test.paramsName[0]="id";
+//   test.paramsValue[0]="37";
+//   test.paramsName[1]="password";
+//   test.paramsValue[1]="papa";
+//   test.paramsName[2]="email";
+//   test.paramsValue[2]="papa";
+//   test.paramsName[3]="role";
+//   test.paramsValue[3]="0";
+//   test.nbParams=1;
+//   createSQLquery(test);
+  
+//     return 1;  ###### pour tester car deconcatene ne fonctionne pas #########################
     
-    if (config_file == NULL) {
-        printf("Error opening config file\n");
-        return 1;
+#define PORT 10000
+
+int main(int argc, char **argv) {
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+
+    // Create server socket
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
     }
 
-    fscanf(config_file, "%s %s", ip, port);
-
-    int server_sock, client_sock;
-
-    char name_buffer[1024];
-    //char password_buffer[1024];
-    char buffer[1024];
-    int n;
-
-    struct sockaddr_in server_addr, client_addr;
-    socklen_t addr_size;
-
-    //create the TCP server socket
-    server_sock = socket(AF_INET, SOCK_STREAM, 0);
-    
-    if(server_sock < 0){
-        perror("[-]Socket error");
-        exit(1);
+    // Set socket options
+    int opt = 1;
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+        perror("setsockopt failed");
+        exit(EXIT_FAILURE);
     }
 
-        /*
-    set up the socket address structure for connecting to a server.
+    // Bind socket to port
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = inet_addr("141.94.70.142");
+    address.sin_port = htons(PORT);
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+ if (listen(server_fd, 3) < 0) {
+        perror("listen failed");
+        exit(EXIT_FAILURE);
+    }
+ puts("en attente de requettes...");
+    // Accept incoming connection
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
+        perror("accept failed");
+        exit(EXIT_FAILURE);
+    }
+   
+    // Send message to client
+    // Receive message from client
+    while(1){
+         // Listen for incoming connections
+   
 
-    1-initialize the memory for the address structure to all zeroes.
-
-    2-sets the address family to be used as the Internet Protocol v4.
-
-    3-set the port number to be used for the connection.
-
-    4-set the IP address to be used for the connection using the inet_addr function which converts the passed IP address string to an 32-bit integer.
-    */
-
-    int p = charToInt2(port);
-
-    memset(&server_addr, '\0', sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(p);
-    server_addr.sin_addr.s_addr = inet_addr(ip);
-
-    //assign or bind a local address and port to a socket
-    n = bind(server_sock, (struct sockaddr*)&server_addr, sizeof(server_addr));
-
-    if(n < 0){
-        perror("[-]Bind error");
-        exit(1);
+    read(new_socket, buffer, 1024);
+    printf("%s\n", buffer);
     }
 
-    //a socket that will be used to accept incoming connections
-    // 5 -> the maximum number of connections that can be queued for the socket
-    listen(server_sock, 5);
-
-     while(1){
-
-        //accept, receive and send data over a socket connection
-        addr_size = sizeof(client_addr);
-        client_sock = accept(server_sock, (struct sockaddr*)&client_addr, &addr_size);
-        //printf("[+]Client connected.\n");
-        
-        // Get the client's IP address
-        struct sockaddr_in* client_address = (struct sockaddr_in*)&client_addr;
-        char* client_ip = inet_ntoa(client_address->sin_addr);
-        printf("Client IP address: %s\n", client_ip);
-
-
-        bzero(name_buffer, sizeof(name_buffer));
-        // bzero(password_buffer, sizeof(password_buffer));
-
-        recv(client_sock, name_buffer, sizeof(name_buffer), 0);
-         createSQLquery(deconcatene(name_buffer)); 
-
-        // recv(client_sock, password_buffer, sizeof(password_buffer), 0);
-        // printf("Client password: %s\n\n", password_buffer);
-
-        //char* client_name = name_buffer;
-        //char* client_ipp = client_ip;
-        //add_user(&client_list, client_name, client_ipp);
-
-        bzero(buffer, 1024);
-        //strcpy(buffer, query);
-        //printf("Server : %s\n", buffer);
-        //send(client_sock, buffer, strlen(buffer), 0);
-
-        close(client_sock);
-        //printf("[+]Client disconnected.\n\n");
-
-        //print_user_list(client_list);
-    }
-
-    //closing the conf file
-    fclose(config_file);
+    // Close sockets
+    close(new_socket);
+    close(server_fd);
 
     return 0;
-
 }
+
+    
+ 
+}
+
+
+
+    
+
+
